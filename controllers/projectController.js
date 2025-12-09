@@ -1,8 +1,8 @@
-const Project = require('../models/Project')
+const Project = require("../models/Project");
+const Task = require('../models/Task');
 
-
-async function getProjects(req, res){
-    try {
+async function getProjects(req, res) {
+  try {
     const userProjects = await Project.find({ user: req.user._id });
 
     res.json(userProjects);
@@ -12,8 +12,8 @@ async function getProjects(req, res){
   }
 }
 
-async function getProjectById(req, res){
-    try {
+async function getProjectById(req, res) {
+  try {
     const { projectId } = req.params;
     const project = await Project.findById(projectId);
 
@@ -26,21 +26,20 @@ async function getProjectById(req, res){
     // Authorization
     console.log(req.user._id);
     console.log(project.user);
-    
+
     if (project.user.toString() !== req.user._id) {
       return res.status(403).json({ message: "User is not authorized!" });
     }
 
     res.json(project);
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error.message });
   }
 }
 
-async function createProject(req, res){
-    try {
+async function createProject(req, res) {
+  try {
     const newProject = await Project.create({
       ...req.body,
       user: req.user._id,
@@ -53,35 +52,50 @@ async function createProject(req, res){
   }
 }
 
-async function updateProject(req, res){
-    try {
-    const projectToUpdate = await Project.findById(req.params.projectId) 
+async function updateProject(req, res) {
+  try {
+    const projectToUpdate = await Project.findById(req.params.projectId);
 
-    if(req.user._id !== projectToUpdate.user.toString()){                      
-        return res.status(403).json({message: "User is not authorized to update this project"})
+    if (req.user._id !== projectToUpdate.user.toString()) {
+      return res
+        .status(403)
+        .json({ message: "User is not authorized to update this project" });
     }
 
-    const project = await Project.findByIdAndUpdate( req.params.projectId, req.body,{new:true} )  
+    const project = await Project.findByIdAndUpdate(
+      req.params.projectId,
+      req.body,
+      { new: true }
+    );
     res.json(project);
-
   } catch (error) {
-    res.status(500).json({error: error.message})
+    res.status(500).json({ error: error.message });
   }
 }
 
-async function deleteProject(req, res){
-      try {
-     const deleteProject = await Project.findById(req.params.projectId) 
+async function deleteProject(req, res) {
+  try {
+    const deleteProject = await Project.findById(req.params.projectId);
 
-    if(req.user._id !== deleteProject.user.toString()){                      
-        return res.status(403).json({message: "User is not authorized to update this project"})
+    if (req.user._id !== deleteProject.user.toString()) {
+      return res
+        .status(403)
+        .json({ message: "User is not authorized to update this project" });
     }
+
+    await Task.deleteMany({ project: req.params.projectId }); //This line of code is to delete a task associated with a project that is been deleted
 
     const project = await Project.findByIdAndDelete(req.params.projectId);
 
-    res.json({message: "Project deleted"})
+    res.json({ message: "Project deleted" });
   } catch (error) {
-     res.status(500).json({error: error.message})
+    res.status(500).json({ error: error.message });
   }
 }
-module.exports = {getProjects, getProjectById, createProject, updateProject, deleteProject}
+module.exports = {
+  getProjects,
+  getProjectById,
+  createProject,
+  updateProject,
+  deleteProject,
+};
