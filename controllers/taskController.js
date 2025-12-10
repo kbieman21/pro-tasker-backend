@@ -65,12 +65,11 @@ async function getTaskById(req, res){
         }
 		
         //find the project owner
-        const projectId = getTaskById.project;
+        //const projectId = getTaskById.project;		
 		
+        //console.log(projectId);
 		
-        console.log(projectId);
-		
-        const getProject = await Project.findById(projectId);
+        const getProject = await Project.findById(req.params.projectId);
         if (!getProject) {
             return res.status(400).json({ message: "Invalid project ID" });
         }
@@ -85,7 +84,7 @@ async function getTaskById(req, res){
         if (!task) {
             return res.status(404).json({ message: "No task found with this id!" });
         }
-        res.json({ message: "we found task!" });
+        res.json(task);
     } catch (err) {
         res.status(500).json(err);
     }
