@@ -15,6 +15,84 @@ async function getTasks(req, res){
   }
 }
 
+async function getTaskById(req, res){
+  // try {
+  //   const { taskId, projectId } = req.params;
+
+  //   const task = await Task.findById(taskId);
+  //   const project = await Project.findById(projectId)
+
+  //   if(!project){
+  //     return res
+  //       .status(404)
+  //       .json({ message: `Project with id: ${projectId} not found!` });
+  //   }
+
+  //   if (!taskId) {
+  //     return res
+  //       .status(404)
+  //       .json({ message: `Task with id: ${taskId} not found!` });
+  //   }
+
+    
+    
+  //   // Authorization
+  //   console.log(req.user._id);
+  //   console.log(task.project);
+  //   console.log(task.project, req.project._id.toString());
+    
+
+  //   if (task.project!== req.project._id.toString()) {      
+  //     return res.status(403).json({ message: "Project doesn't have this task!" });
+  //   }
+
+  //   res.json(task);
+  // } catch (error) {
+  //   console.error(error);
+  //   res.status(500).json({ error: error.message });
+  // }
+   try {
+        // This needs an authorization check
+        //get to be update task
+		
+		
+       // const getDeleteTask = await Task.findById(req.params.taskId);
+	   
+	    const getTaskById = await Task.findById(req.params.taskId);
+		
+        if (!getTaskById) {
+            return res.status(400).json({ message: "Invalid Task ID" });
+        }
+		
+        //find the project owner
+        const projectId = getTaskById.project;
+		
+		
+        console.log(projectId);
+		
+        const getProject = await Project.findById(projectId);
+        if (!getProject) {
+            return res.status(400).json({ message: "Invalid project ID" });
+        }
+		
+        // check if the user field on that task matches the authenticated user’s _id.
+        if (getProject.user.toString() !== req.user._id) {
+            return res
+                .status(403)
+                .json({ message: "Not Authorize to update this task" });
+        }
+        const task = await Task.findById(req.params.taskId);
+        if (!task) {
+            return res.status(404).json({ message: "No task found with this id!" });
+        }
+        res.json({ message: "we found task!" });
+    } catch (err) {
+        res.status(500).json(err);
+    }
+
+}
+
+
 async function updateTask(req, res){
      try {
     const task = await Task.findById(req.params.taskId);
@@ -91,4 +169,4 @@ async function createTask(req, res){
     res.status(500).json({ error: error.message });
   }
 }
-module.exports = {getTasks, updateTask, deleteTask, createTask}
+module.exports = {getTasks, getTaskById, updateTask, deleteTask, createTask}

@@ -2,7 +2,7 @@ const express = require("express");
 const { authMiddleware } = require("../middlewares/auth");
 const Task = require("../models/Task");
 const Project = require("../models/Project");
-const {getTasks, updateTask, deleteTask, createTask} = require('../controllers/taskController')
+const {getTasks, updateTask, deleteTask, createTask, getTaskById} = require('../controllers/taskController')
 
 const taskRouter = express.Router();
 
@@ -13,6 +13,11 @@ taskRouter.use(authMiddleware);
  * GET /api/projects/:projectId/tasks
  */
 taskRouter.get('/:projectId/tasks', getTasks);
+
+/**
+ * GET /api/projects/:projectId/tasks/:taskId
+ */
+taskRouter.get('/:projectId/tasks/:taskId', getTaskById);
 
 /**
  * POST /api/projects/:projectId/tasks
