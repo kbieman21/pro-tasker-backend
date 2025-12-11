@@ -80,3 +80,7 @@ POST /api/users/login
   "email": "user777@test.com",
   "password": "password123"
 }
+
+
+TODOs
+If I had more time I would add update and delete users which is only admin role.
